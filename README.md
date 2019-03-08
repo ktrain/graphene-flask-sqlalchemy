@@ -2,6 +2,13 @@
 
 ## Notes
 
-- The code in https://github.com/graphql-python/graphene-sqlalchemy/tree/master/examples/flask_sqlalchemy differs from the code snippets in https://docs.graphene-python.org/projects/sqlalchemy/en/latest/tutorial/.
+- Make sure you use Python 2.
+  - For Mac users, `brew install python@2` is all you need to do to prep.
+- The code in the [Graphene SQLAlchemy + Flask tutorial](https://github.com/graphql-python/graphene-sqlalchemy/tree/master/examples/flask_sqlalchemy) differs from the code snippets in the [referenced Git repo](https://docs.graphene-python.org/projects/sqlalchemy/en/latest/tutorial/).
+  - I recommend ignoring the repo and sticking to the tutorial.
   - The former has some extra schema classes that are not necessary.
-- I ran into [this issue](https://github.com/graphql-python/graphene-sqlalchemy/issues/153) when running the code copied straight from the SQLAlchemy tutorial. Replacing `DepartmentConnection` with `DepartmentConnections`, as suggested in [this post](https://github.com/graphql-python/graphene-sqlalchemy/issues/153#issuecomment-414441245), fixed the problem.
+  - The difference in code made it difficult to apply the fix in the next bullet.
+  - Using the `requirements.txt` in the repo gives you outdated package versions.
+- I ran into [this issue](https://github.com/graphql-python/graphene-sqlalchemy/issues/153) when running the code copied straight from the SQLAlchemy tutorial.
+  - Replacing `DepartmentConnection` with `DepartmentConnections`, as suggested in [this post](https://github.com/graphql-python/graphene-sqlalchemy/issues/153#issuecomment-414441245), fixed the problem.
+  - For consistency, I did the same for `EmployeeConnection`.
