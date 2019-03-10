@@ -1,18 +1,19 @@
 import graphene
 from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyConnectionField
-from schema_department import Department, DepartmentConnections
-from schema_employee import Employee, EmployeeConnections
+import schema_department as Department
+import schema_employee as Employee
 
 
-class Query(graphene.ObjectType):
+class Query(Employee.Query, Department.Query, graphene.ObjectType):
     node = relay.Node.Field()
 
-    employee = relay.Node.Field(Employee)
-    employees = SQLAlchemyConnectionField(EmployeeConnections)
 
-    department = relay.Node.Field(Department)
-    departments = SQLAlchemyConnectionField(DepartmentConnections)
+class Mutation(graphene.ObjectType):
+    create_employee = Employee.Create.Field()
 
 
-schema = graphene.Schema(query=Query, types=[Department, Employee])
+schema = graphene.Schema(query=Query, mutation=Mutation, types=[
+    Department.DepartmentType,
+    Employee.EmployeeType
+])

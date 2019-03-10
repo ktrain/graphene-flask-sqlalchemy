@@ -4,11 +4,20 @@ from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
 from models import db_session, Department as DepartmentModel
 
 
-class Department(SQLAlchemyObjectType):
+class DepartmentAttribute:
+    name = graphene.String(description="Name of the department")
+
+
+class DepartmentType(SQLAlchemyObjectType, DepartmentAttribute):
     class Meta:
         model = DepartmentModel
         interfaces = (relay.Node, )
 
-class DepartmentConnections(relay.Connection):
+
+class DepartmentConnection(relay.Connection):
     class Meta:
-        node = Department
+        node = DepartmentType
+
+
+class Query(graphene.ObjectType):
+    departments = SQLAlchemyConnectionField(DepartmentConnection)

@@ -23,6 +23,7 @@ class Employee(Base):
     __tablename__ = 'employee'
     id = Column(Integer, primary_key=True)
     name = Column(String)
+    hired_on = Column(DateTime, default=func.now())
     salary = Column(Integer)
     department_id = Column(Integer, ForeignKey('department.id'))
     department = relationship(
