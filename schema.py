@@ -9,8 +9,8 @@ class Query(Employee.Query, Department.Query, graphene.ObjectType):
     node = relay.Node.Field()
 
 
-class Mutation(graphene.ObjectType):
-    create_employee = Employee.Create.Field()
+class Mutation(Employee.Mutation, graphene.ObjectType):
+    pass
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation, types=[
