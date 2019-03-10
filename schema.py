@@ -1,36 +1,18 @@
 import graphene
 from graphene import relay
-from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
-from models import db_session, Department as DepartmentModel, Employee as EmployeeModel
-
-
-class Department(SQLAlchemyObjectType):
-    class Meta:
-        model = DepartmentModel
-        interfaces = (relay.Node, )
-
-
-class DepartmentConnections(relay.Connection):
-    class Meta:
-        node = Department
-
-
-class Employee(SQLAlchemyObjectType):
-    class Meta:
-        model = EmployeeModel
-        interfaces = (relay.Node, )
-
-
-class EmployeeConnections(relay.Connection):
-    class Meta:
-        node = Employee
+from graphene_sqlalchemy import SQLAlchemyConnectionField
+from schema_department import Department, DepartmentConnections
+from schema_employee import Employee, EmployeeConnections
 
 
 class Query(graphene.ObjectType):
     node = relay.Node.Field()
-    # Allows sorting over multiple columns, by default over the primary key
-    all_employees = SQLAlchemyConnectionField(EmployeeConnections)
-    # Disable sorting over this field
-    all_departments = SQLAlchemyConnectionField(DepartmentConnections, sort=None)
 
-schema = graphene.Schema(query=Query)
+    employee = relay.Node.Field(Employee)
+    employees = SQLAlchemyConnectionField(EmployeeConnections)
+
+    department = relay.Node.Field(Department)
+    departments = SQLAlchemyConnectionField(DepartmentConnections)
+
+
+schema = graphene.Schema(query=Query, types=[Department, Employee])
