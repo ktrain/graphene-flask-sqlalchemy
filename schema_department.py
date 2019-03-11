@@ -20,4 +20,5 @@ class DepartmentConnection(relay.Connection):
 
 
 class Query(graphene.ObjectType):
+    department = relay.Node.Field(DepartmentType)
     departments = SQLAlchemyConnectionField(DepartmentConnection)

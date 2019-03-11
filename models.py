@@ -31,3 +31,21 @@ class Employee(Base):
         backref=backref('employees',
                         uselist=True,
                         cascade='delete,all'))
+
+    @staticmethod
+    def create(data):
+        employee = Employee(**data)
+        db_session.add(employee)
+        db_session.commit()
+        return employee
+
+    @staticmethod
+    def getPage(page_num, page_size):
+        limit = page_size
+        offset = (page_num-1) * page_size
+        employees = db_session.query(Employee).limit(limit).offset(offset).all()
+        return employees
+
+    @staticmethod
+    def count():
+        return db_session.query(Employee).count()

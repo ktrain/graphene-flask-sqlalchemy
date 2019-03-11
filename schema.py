@@ -15,5 +15,6 @@ class Mutation(Employee.Mutation, graphene.ObjectType):
 
 schema = graphene.Schema(query=Query, mutation=Mutation, types=[
     Department.DepartmentType,
-    Employee.EmployeeType
+    Employee.EmployeeType,
+    Employee.EmployeePage
 ])

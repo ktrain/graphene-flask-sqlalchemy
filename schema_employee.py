@@ -3,6 +3,14 @@ from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
 from models import db_session, Employee as EmployeeModel
 import utils
+import math
+
+
+class PaginationInfo(graphene.ObjectType):
+    page_num = graphene.Int(description="Current page number")
+    page_count = graphene.Int(description="Total number of pages")
+    page_size = graphene.Int(description="Number of edges per page")
+    edge_count = graphene.Int(description="Total number of edges")
 
 
 class EmployeeBase:
@@ -18,13 +26,41 @@ class EmployeeType(SQLAlchemyObjectType, EmployeeBase):
         interfaces = (relay.Node, )
 
 
-class EmployeeConnection(relay.Connection):
-    class Meta:
-        node = EmployeeType
+class EmployeePage(graphene.ObjectType):
+    employees = graphene.List(EmployeeType)
+    page_info = graphene.Field(PaginationInfo)
+
+    def resolve_employees(self, info, **args):
+        print 'resolving employees'
+        page_num = args.get('page_num') or 1
+        page_size = args.get('page_size') or 3
+
+        employees = EmployeeModel.getPage(page_num, page_size)
+        return [ EmployeeType(employee) for employee in employees ]
+
+    def resolve_page_info(self, info, **args):
+        print 'resolving page info'
+        page_num = args.get('page_num') or 1
+        page_size = args.get('page_size') or 3
+        edge_count = EmployeeModel.count()
+        page_count = math.ceil(float(edge_count)/page_size)
+
+        return PaginationInfo(
+            page_num=page_num,
+            page_count=page_count,
+            page_size=page_size,
+            edge_count=edge_count
+        )
 
 
 class Query(graphene.ObjectType):
-    employees = SQLAlchemyConnectionField(EmployeeConnection)
+    employee = relay.Node.Field(EmployeeType)
+    employees = graphene.Field(
+        EmployeePage,
+        description="Get a page of Employees",
+        page_num=graphene.Int(),
+        page_size=graphene.Int()
+    )
 
 
 class EmployeeInput(EmployeeBase, graphene.InputObjectType):
@@ -42,9 +78,7 @@ class CreateEmployee(graphene.Mutation):
         ok = False
         if ('department_id' in input):
             input['department_id'] = utils.global_id_to_db_id(input['department_id'])
-        employee = EmployeeModel(**input)
-        db_session.add(employee)
-        db_session.commit()
+        employee = EmployeeModel.create(input)
         ok = True
 
         return CreateEmployee(employee=employee, ok=ok)
